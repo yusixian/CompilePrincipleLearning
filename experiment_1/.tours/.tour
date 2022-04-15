@@ -1,0 +1,293 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "词法分析器设计",
+  "steps": [
+    {
+      "file": "demo/main.cpp",
+      "description": "# 头文件声明和全局变量定义\r\n定义关键字表、运算符表和界符表",
+      "line": 27,
+      "selection": {
+        "start": {
+          "line": 9,
+          "character": 1
+        },
+        "end": {
+          "line": 27,
+          "character": 118
+        }
+      },
+      "title": "1:头文件声明和全局变量定义"
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "# 生成的数据结构——Token流\r\n包括了种别码、值和种别码对应的类型名称\r\n",
+      "line": 37,
+      "selection": {
+        "start": {
+          "line": 28,
+          "character": 1
+        },
+        "end": {
+          "line": 37,
+          "character": 3
+        }
+      },
+      "title": "2:生成的数据结构——Token流"
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "# 所需全局变量\r\n`code` 为待识别的字符串，`pos` 为当前识别的位置，`len`为 `code`的长度（均在init函数中进行初始化），`tempToken` 存放临时的字符串（变量值、常量等），`tokenList` 存放识别出的token",
+      "line": 40,
+      "selection": {
+        "start": {
+          "line": 38,
+          "character": 1
+        },
+        "end": {
+          "line": 40,
+          "character": 41
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "# 读取文件函数 readFile\r\n根据文件名读取文件，返回一个string动态数组（`vector<string>`），若过程中出错则报错",
+      "line": 55,
+      "selection": {
+        "start": {
+          "line": 41,
+          "character": 1
+        },
+        "end": {
+          "line": 55,
+          "character": 2
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "# init 初始化函数\r\n读取包含关键字、界符表等的种别文件，初始化对应表，并读入待识别的code文件",
+      "line": 78,
+      "selection": {
+        "start": {
+          "line": 56,
+          "character": 1
+        },
+        "end": {
+          "line": 78,
+          "character": 2
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "# peek函数 探测下一个字符\r\n探测下一个字符，若存在则返回该字符，否则返回\\0即字符串结束符",
+      "line": 82,
+      "selection": {
+        "start": {
+          "line": 79,
+          "character": 1
+        },
+        "end": {
+          "line": 82,
+          "character": 2
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "# isxxx函数 判断类别\r\n判断是否为字符、数字或者关键字等\r\n",
+      "line": 108,
+      "selection": {
+        "start": {
+          "line": 83,
+          "character": 1
+        },
+        "end": {
+          "line": 108,
+          "character": 2
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "# judge函数 `_SPACE_`\r\n## `_SPACE_`\r\n若为回车或者空格等空白符，忽略不计返回枚举量`_SPACE_",
+      "line": 110,
+      "selection": {
+        "start": {
+          "line": 110,
+          "character": 1
+        },
+        "end": {
+          "line": 111,
+          "character": 1
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "## `_DOUBLE_` or `_INT_`\r\n若第一个字符为数字，则进行实型或整型的判断\r\n",
+      "line": 151,
+      "selection": {
+        "start": {
+          "line": 111,
+          "character": 1
+        },
+        "end": {
+          "line": 151,
+          "character": 6
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "## `_KEYWORD_` or `_ID_`\r\n若第一个字符为字母或者下划线，则返回`_KEYWORD_` or `_ID_`",
+      "line": 161,
+      "selection": {
+        "start": {
+          "line": 160,
+          "character": 39
+        },
+        "end": {
+          "line": 160,
+          "character": 56
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "## `_STRING_`\r\n第一个字符为 `\"` 的情况，进入字符串常量的判断",
+      "line": 175,
+      "selection": {
+        "start": {
+          "line": 162,
+          "character": 4
+        },
+        "end": {
+          "line": 175,
+          "character": 6
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "# `_CHAR_`\r\n第一个字符为 `'`，进入单个字符常量判断，多于一个字符则报错。",
+      "line": 200,
+      "selection": {
+        "start": {
+          "line": 176,
+          "character": 1
+        },
+        "end": {
+          "line": 200,
+          "character": 6
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "# `_COMMENT_`\r\n第一个字符为 `/`，进入注释判断，详见DFA",
+      "line": 223,
+      "selection": {
+        "start": {
+          "line": 201,
+          "character": 2
+        },
+        "end": {
+          "line": 223,
+          "character": 6
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "## `_OPERATOR_`\r\n第一个字符为运算符，进入运算符判断",
+      "line": 236,
+      "selection": {
+        "start": {
+          "line": 225,
+          "character": 1
+        },
+        "end": {
+          "line": 236,
+          "character": 6
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "## `_DELIMITER_`\r\n第一个字符为界符，进入界符判断",
+      "line": 241,
+      "selection": {
+        "start": {
+          "line": 240,
+          "character": 16
+        },
+        "end": {
+          "line": 240,
+          "character": 27
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "# read_next函数 读取下一个字符\r\n## `_SPACE_`\r\n空白符则继续读取直到没有下一个字符了或者不是空白符。",
+      "line": 249,
+      "selection": {
+        "start": {
+          "line": 246,
+          "character": 1
+        },
+        "end": {
+          "line": 249,
+          "character": 6
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "## `_EOF_`\r\n读完空白符后无下一个字符了。返回`_EOF_`",
+      "line": 251,
+      "selection": {
+        "start": {
+          "line": 250,
+          "character": 1
+        },
+        "end": {
+          "line": 251,
+          "character": 11
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "## `_ERROR_` 直接返回，其他类型进行相应处理",
+      "line": 271,
+      "selection": {
+        "start": {
+          "line": 252,
+          "character": 1
+        },
+        "end": {
+          "line": 271,
+          "character": 6
+        }
+      }
+    },
+    {
+      "file": "demo/main.cpp",
+      "description": "# main函数 主程序入口\r\n不断读取直到结束，读取中若有错误不中断，而是从下一个不出错的字符继续往后读取。最后输出token流",
+      "line": 282,
+      "selection": {
+        "start": {
+          "line": 276,
+          "character": 1
+        },
+        "end": {
+          "line": 282,
+          "character": 27
+        }
+      }
+    }
+  ]
+}

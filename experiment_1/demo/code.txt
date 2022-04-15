@@ -1,0 +1,19 @@
+int main() {
+    char ch = 'ss';
+    string str = "Hello, World!"
+    char ch2 = 's';
+    init();
+    double x = 10.31;/* some comment */
+    int m = 0;
+    int y = 310, m = 0.31;
+    while(pos < len) {
+        int flag = read_next();
+        if(flag == _EOF_) break;
+        if(flag != _ERROR_) {
+            Token t(flag, tempToken);
+            tokenList.push_back(t);
+            cout << t << endl;
+        } else cout << "Error!" << endl;
+    }
+    return 0;
+}
