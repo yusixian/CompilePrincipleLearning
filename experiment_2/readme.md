@@ -1,11 +1,4 @@
-<!--
- * @Author: cos
- * @Date: 2022-04-13 01:05:53
- * @LastEditTime: 2022-04-13 01:35:32
- * @LastEditors: cos
- * @Description: 
- * @FilePath: \CS\experiment_2\LL(1)分析法设计.md
--->
+源代码在demo文件夹中
 
 # 一.	实验目的
 
@@ -134,7 +127,7 @@ type C[10][10];                 /* 预测分析表 */
 
 ### （1）函数汇总表
 
-函数名称         | 功能简述                                   |
+| 函数名称         | 功能简述                                   |
 | ------------ | -------------------------------------- |
 | `readFile`     | 读取文件函数，返回一个string动态数组，以行数分割            |
 | `init`         | 初始化函数，在该函数中进行分析栈、剩余栈的初始化               |
@@ -142,6 +135,7 @@ type C[10][10];                 /* 预测分析表 */
 | `isTerminator` | 判断当前字符c是否是终结符                          |
 | `analyze`      | 分析字符串s，输出其分析步骤                         |
 | `main`         | 主程序入口，从此进入，填充初始分析表及产生式初始化，调用读取文件函数开始分析
+
 ### （2）函数的调用关系
 ![function](https://img-blog.csdnimg.cn/abc7e8b3a3284171aa084634eb198772.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5L2ZY29z,size_12,color_FFFFFF,t_70,g_se,x_16)
 
@@ -149,87 +143,71 @@ type C[10][10];                 /* 预测分析表 */
 
 ### 输入
 
-code.txt
+文件exp.txt
 
-```
-int main() {
-    char ch = 'ss';
-    string str = "Hello, World!"
-    char ch2 = 's';
-    init();
-    double x = 10.31;/* some comment */
-    int m = 0;
-    int y = 310, m = 0.31;
-    while(pos < len) {
-        int flag = read_next();
-        if(flag == _EOF_) break;
-        if(flag != _ERROR_) {
-            Token t(flag, tempToken);
-            tokenList.push_back(t);
-            cout << t << endl;
-        } else cout << "Error!" << endl;
-    }
-    return 0;
-}
+```txt
+i*(i+i)+(i*i)#
+i*i-i/1#
+i+i*i+i*(i+i*i)#
+i+*i(i)+i(i+i*i)#
+i+i(i)#code.txt
 ```
 
 ### 输出
 
-![0I3RK{8 N%JNPNA</code></code>(WB_R.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a2c8cbe0d32a4149a4d8ec9525d9b39a~tplv-k3u1fbpfcp-watermark.image?)
+![实验结果](https://img-blog.csdnimg.cn/76ca3a03665a4aa8a7c8a4ac59057b54.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5L2ZY29z,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-# 四、实验总结
+![在这里插入图片描述](https://img-blog.csdnimg.cn/f17a8979097b4880bebcb857e849445e.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5L2ZY29z,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-此次实验还是很有意思的，最终跑通的时候也是非常有成就感，个人感觉不用拘泥于用什么算法，只需要捋清楚自己的思路，如何设计才能使这个程序能正确识别？主要有一个优先级的思路，空格和换行符会被跳过，然后先判断是否为数字或者字母，在进行相应处理，然后进行一些特殊界符的判断，如字符串、注释等。我认为代码就足以很好的说清楚这个流程。这个程序暂时只使用常用符号（.）来支持小数，如果需要更多，可以在judge中的isdigit()后进行修改，改起来并不困难。显然，judge函数中的函数还可以拆成更细致的几个函数，但这就等以后再补全了。
 
-# 五、思考题回答
-
-## 程序设计中哪些环节影响词法分析的效率？如何提高效率？
-
-答：有待优化的部分还有不少，例如在判断是否为关键字时，目前的方法是把可能为标识符或者关键字的字符串读取完后存放在一个字符数组后再逐个与关键字表进行匹配，可改为在读取的同时判断，这样会提高效率。还有就是界符匹配也是同理。
 
 # 完整代码
 
 ```cpp
 /*
  * @Author: cos
- * @Date: 2022-04-05 00:10:59
- * @LastEditTime: 2022-04-08 02:37:49
+ * @Date: 2022-04-12 23:03:36
+ * @LastEditTime: 2022-04-13 01:32:58
  * @LastEditors: cos
- * @Description: 词法分析器设计实现
- * @FilePath: \CS\experiment_1\demo\main.cpp
+ * @Description: 
+ * @FilePath: \CS\experiment_2\main.cpp
  */
 #include <iostream>
-#include <vector>
 #include <string>
 #include <fstream>
-#include <map>
+#include <vector>
+#include <cstring>
 using namespace std;
-const string CategoryFileName = "./categoryCode.txt";
-const string CodeFileName = "./code.txt";
-string keywords[22];  // 关键字表 种别码1-22
-string operate[28];  // 运算符表 种别码23-50
-string delimiter[15];  // 界符表 种别码51-65
-map<string, int> categoryCode;  // 种别码表
-const string op = "+-*/%=!&|<>";
-const int _EOF_ = -2;
-const int _ERROR_ = -1;
-enum { 
-    _ID_, _INT_, _DOUBLE_, _OPERATOR_, _DELIMITER_, _KEYWORD_, _CHAR_, _STRING_, _COMMENT_, _SPACE_
-};  // 类型
-string cat[10] = { "id", "int", "double", "operator", "delimiter", "keyword", "char", "string", "comment", "space" };
-struct Token {
-    int type;   // 种别码
-    string value;       // 值 关键字/变量名/数字/运算符/界符
-    string category;    // 种别码对应的类型名称
-    Token(int type, string value, string category) : type(type), value(value), category(category) {}
-    friend ostream& operator<<(ostream& os, const Token& t) {
-        os << t.category << ", type: " << t.type << ", value: " << t.value;
-        return os;
+const string ExpFileName = "./exp.txt";
+char analyeStack[20];                           /*分析栈*/
+char restStack[20];                             /*剩余栈*/
+const string v1 = "i+*()#"; /*终结符 */
+const string v2 = "EGTSF";      /*非终结符   */
+int top, ridx, len; /*len为输入串长度 */
+struct type { /*产生式类型定义      */
+    char origin;   /*产生式左侧字符 大写字符  */
+    string array; /*产生式右边字符 */
+    int length;    /*字符个数      */
+    type():origin('N'), array(""), length(0) {}
+    void init(char a, string b) {
+        origin = a;
+        array = b;
+        length = array.length();
     }
 };
-int pos, len;  // 当前字符位置和长度
-string code, tempToken;  // 当前识别的字符串
-vector<Token> tokenList;  // 存储识别出的token
+type e, t, g, g1, s, s1, f, f1; /* 产生式结构体变量 */
+type C[10][10];                 /* 预测分析表 */
+void print() {/*输出分析栈和剩余栈 */
+    for(int i = 0; i <= top + 1; ++i)   /*输出分析栈  */
+        cout << analyeStack[i];
+    cout << "\t\t";
+
+    for(int i = 0; i < ridx; ++i) /*输出对齐符*/
+        cout << ' ';
+    for(int i = ridx; i <= len; ++i)   /*输出剩余串*/
+        cout << restStack[i];
+    cout << "\t\t\t";
+}
 // 读文件
 vector<string> readFile(string fileName) {
     vector<string> res;
@@ -245,233 +223,99 @@ vector<string> readFile(string fileName) {
         return res;
     }
 }
-void init() {
-    vector<string> res = readFile(CategoryFileName); 
-    // cout << "len:" << len << endl;
-    for(int i = 0; i < 22; ++i) {
-        keywords[i] = res[i];
-        categoryCode[res[i]] = i+1;
-        // cout << "keyword:" << res[i] << endl;
-    }
-    for(int i = 0; i < 28; ++i) {
-        operate[i] = res[i + 22];
-        categoryCode[res[i+22]] = i+23;
-        // cout << "operate:" << res[i + 22] << endl;
-    }
-    for(int i = 0; i < 15; ++i) {
-        delimiter[i] = res[i + 50];
-        categoryCode[res[i+50]] = i+51;
-        // cout << "delimiter:" << res[i + 50] << endl;
-    }
-    res = readFile(CodeFileName);
-    for(int i = 0; i < res.size(); ++i)
-        code += res[i]+'\n';
-    len = code.size();
+bool isTerminator(char c) { // 判断是否是终结符
+    return v1.find(c) != string::npos;
 }
-char peek() {
-    if (pos+1 < len) return code[pos+1];
-    else return '\0';
+void init(string exp) {
+    top = ridx = 0;
+    len = exp.length();     /*分析串长度*/
+    for(int i = 0; i < len; ++i)
+        restStack[i] = exp[i];
 }
-inline bool isDigit(char c) {
-    return c >= '0' && c <= '9';
-}
-// 是否为字母或下划线
-inline bool isLetter(char c) {
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
-}
-bool isKeyword(string s) {
-    for(int i = 0; i < 22; ++i)
-        if (s == keywords[i]) 
-            return true;
-    return false;
-}
-bool isOP(char ch) {
-    return op.find(ch) != string::npos;
-}
-bool isOperator(string s) {
-    for(int i = 0; i < 28; ++i)
-        if (s == operate[i]) return true;
-    return false;
-}
-bool isDelimiter(char ch) {
-    for(int i = 0; i < 15; ++i)
-        if (ch == delimiter[i][0]) return true;
-    return false;
-}
-int judge(char ch) {
-    if(ch == '\n' || ch == ' ') return _SPACE_;
-    if(isDigit(ch)) {
-        char nextChar = peek();
-        if(ch == '0' && nextChar == '.') { // 0.多少
-            ++pos;
-            if(!isDigit(peek()))   // .后面不是数字
-                return _ERROR_;
-            tempToken = "0.";
-            while(isDigit(peek())) {
-                tempToken += peek();
-                ++pos;
+void analyze(string exp) {  // 分析一个文法
+    init(exp);
+    int k = 0;
+    analyeStack[top] = '#';
+    analyeStack[++top] = 'E'; /*'#','E'进栈*/
+    cout << "步骤\t\t分析栈 \t\t剩余字符 \t\t所用产生式 " << endl;
+    while(true) {
+        char ch = restStack[ridx];
+        char x = analyeStack[top--]; /*x为当前栈顶字符*/
+        cout << ++k << "\t\t";
+        if(x == '#') {
+            cout << "分析成功！AC！\n" << endl; /*接受 */
+            return;
+        }
+        if(isTerminator(x)) {
+            if (x == ch) {  // 匹配上了
+                print();
+                cout << ch << "匹配" << endl;
+                ch = restStack[++ridx]; /*下一个输入字符*/
+            } else {             /*出错处理*/
+                print();
+                cout << "分析出错，错误终结符为" << ch << endl; /*输出出错终结符*/
+                return;
             }
-            return _DOUBLE_;    // 8
-        } else if(ch == '0' && !isDigit(nextChar)) { // 不是数字也不是.，说明是单纯的一个0
-            tempToken = "0";
-            return _INT_;   // 5
-        } else if(ch != '0') {  // digit1
-            tempToken = ch;
-            while(isDigit(peek())) {
-                tempToken += peek();
-                ++pos;
+        } else {    /*非终结符处理*/
+            int m, n;   // 非终结符下标， 终结符下标
+            v2.find(x) != string::npos ? m = v2.find(x) : -1;   // m为-1则说明找不到该非终结符，出错
+            v1.find(ch) != string::npos ? n = v1.find(ch) : -1; // n为-1则说明找不到该终结符，出错
+            if(m == -1 || n == -1) { /*出错处理*/
+                print();
+                cout << "分析出错，错误非终结符为" << x << endl; /*输出出错非终结符*/
+                return;
             }
-            char nextChar = peek();
-            if(nextChar == '.') {
-                tempToken += nextChar;
-                ++pos;
-                nextChar = peek();
-                if(isDigit(nextChar)) {
-                    tempToken += peek();
-                    ++pos;
-                    while(isDigit(peek())) {
-                        tempToken += peek();
-                        ++pos;
-                    }
-                    return _DOUBLE_;    // 8
-                } else return _ERROR_;
-            } else return _INT_;    // 6
-        } else {    // 0+数字
-            ++pos;
-            return _ERROR_;         // ERROR
-        }
-    }
-    if(isLetter(ch)) {
-        tempToken = ch;
-        char nextChar = peek();
-        while( isLetter(nextChar) || isDigit(nextChar) ) { // 标识符~
-            tempToken += nextChar;
-            ++pos;
-            nextChar = peek();
-        }
-        return isKeyword(tempToken) ? _KEYWORD_ : _ID_;
-    } 
-    if(ch == '\"') {
-        tokenList.push_back(Token(54, "\"", cat[_DELIMITER_]));
-        tempToken = "";
-        char nextChar = peek();
-        while(nextChar != '\"') {
-            tempToken += nextChar;
-            ++pos;
-            nextChar = peek();
-        }
-        tokenList.push_back(Token(69, tempToken, cat[_STRING_]));
-        tokenList.push_back(Token(54, "\"", cat[_DELIMITER_]));
-        pos += 2;
-        return _STRING_;
-    }
-    if(ch == '\'') {
-        tempToken = "";
-        ++pos;
-        char nextChar = peek();
-        if(nextChar == '\'') {
-            tokenList.push_back(Token(53, "\'", cat[_DELIMITER_]));
-            tempToken += code[pos];
-            tokenList.push_back(Token(68, tempToken, cat[_CHAR_]));
-            tokenList.push_back(Token(53, "\'", cat[_DELIMITER_]));
-            ++pos;
-            return _CHAR_;
-        } else if(code[pos] == '\'') {
-            tokenList.push_back(Token(53, "\'", cat[_DELIMITER_]));
-            tokenList.push_back(Token(68, tempToken, cat[_CHAR_]));  // 空字符串
-            tokenList.push_back(Token(53, "\'", cat[_DELIMITER_]));
-            return _CHAR_;
-        } else {
-            while(pos < len && nextChar != '\'') {
-                ++pos;
-                nextChar = peek();
+            type nowType = C[m][n];/*用来接受C[m][n]*/
+            if(nowType.origin != 'N') {/*判断是否为空*/
+                print();
+                cout << nowType.origin << "->" << nowType.array << endl; /*输出产生式*/
+                for (int j = (nowType.length - 1); j >= 0; --j) /*产生式逆序入栈*/
+                    analyeStack[++top] = nowType.array[j];
+                if (analyeStack[top] == '^') /*为空则不进栈*/
+                    top--;
+            } else { /*出错处理*/
+                print();
+                cout << "分析出错，错误非终结符为" << x << endl; /*输出出错非终结符*/
+                return;
             }
-            ++pos;
-            return _ERROR_;
         }
     }
-    if(ch == '/') {
-        if(peek() == '*') {
-            ++pos;
-            char nextChar = peek();
-            ++pos;
-            tempToken = "";
-            while(pos < len) {
-                if(nextChar == '*' && peek() == '/') {
-                    tokenList.push_back(Token(55, "/*", cat[_DELIMITER_]));
-                    tokenList.push_back(Token(71, tempToken, cat[_COMMENT_]));
-                    tokenList.push_back(Token(56, "*/", cat[_DELIMITER_]));
-                    ++pos;
-                    ++pos;
-                    return _COMMENT_;
-                } else {
-                    tempToken += nextChar;
-                    nextChar = peek();
-                    ++pos;
-                }
-            }
-            return _ERROR_;
-        }
-    }
-
-    if(isOP(ch)) {   // op运算符
-        tempToken = "";
-        tempToken += ch;
-        char nextChar = peek();
-        if(isOP(nextChar)) {
-            if(isOperator(tempToken + nextChar)) {
-                tempToken += nextChar;
-                ++pos;
-                return _OPERATOR_;      // 15
-            } else return _OPERATOR_;   // 14
-        } else return _OPERATOR_;       // 14
-    }
-    if(isDelimiter(ch)) {
-        tempToken = "";
-        tempToken += ch;
-        return _DELIMITER_;
-    }
-    return _ERROR_;  
-}
-int read_next() {
-    int type = judge(code[pos]);
-    while(pos < len && type == _SPACE_) {
-        ++pos;
-        type = judge(code[pos]);
-    }
-    if(pos >= len) return _EOF_; 
-    ++pos;
-    if(type == _ERROR_) return _ERROR_;
-    if(type == _DOUBLE_) {
-        // cout << "double: " << tempToken << endl;
-        tokenList.push_back(Token(67, tempToken, cat[_DOUBLE_]));
-        return _DOUBLE_;
-    }
-    if(type == _INT_) {
-        // cout << "int: " << tempToken << endl;
-        tokenList.push_back(Token(66, tempToken, cat[_INT_]));
-        return _INT_;
-    }
-    if(type == _ID_) {  // 标识符
-        // cout << "id: " << tempToken << endl;
-        tokenList.push_back(Token(70, tempToken, cat[_ID_]));
-        return _ID_;
-    }
-    if(type == _OPERATOR_ || type == _KEYWORD_ || type == _DELIMITER_) {
-        tokenList.push_back(Token(categoryCode[tempToken], tempToken, cat[type]));
-        return type;
-    }
-    return _ERROR_;
 }
 int main() {
-    init();
-    while(pos < len) {
-        int flag = read_next();
-        if(flag == _EOF_) break;
-        else if(flag == _ERROR_) tokenList.push_back(Token(_ERROR_, "ERROR!", "ERROR"));
+    e.init('E', "TG"), t.init('T', "FS");
+    g.init('G', "+TG"), g1.init('G', "^");
+    s.init('S', "*FS"), s1.init('S', "^");
+    f.init('F', "(E)"), f1.init('F', "i"); /* 结构体变量 */
+    /*填充分析表*/
+    C[0][0] = C[0][3] = e;
+    C[1][1] = g; 
+    C[1][4] = C[1][5] = g1;
+    C[2][0] = C[2][3] = t;
+    C[3][2] = s;
+    C[3][4] = C[3][5] = C[3][1] = s1;
+    C[4][0] = f1; C[4][3] = f;
+    cout << "LL（1）分析程序分析程序，编制人：xxx xxx 计科xxxx班" << endl;
+    cout << "提示:本程序只能对由'i','+','*','(',')'构成的以'#'结束的字符串进行分析，每行一个读入的字符串" << endl;
+    cout << "读取的文件名为：" << ExpFileName << endl; 
+    vector<string> exps = readFile(ExpFileName);
+    int len = exps.size();
+    for(int i = 0; i < len; i++) {
+        string exp = exps[i];
+        cout << "------------------待分析字符串" << i+1 << "："<< exp << "--------------------" << endl;
+        bool flag = true;
+        for(int j = 0; j < exp.length(); j++) {
+            if(!isTerminator(exp[j])) {
+                cout << "第"<< i+1 << "行输入的字符串不合法，请重新输入" << endl;
+                flag = false;
+                break;
+            }
+        }
+        if(flag) {
+            cout << "字符串" << i+1 << "：" << exp << endl;
+            analyze(exp);
+        }
     }
-    for(auto t : tokenList)
-        cout << t << endl;
     return 0;
 }
+
 ```
