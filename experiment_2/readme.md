@@ -134,7 +134,7 @@ type C[10][10];                 /* 预测分析表 */
 | `print`        | 输出当前分析栈和剩余栈                            |
 | `isTerminator` | 判断当前字符c是否是终结符                          |
 | `analyze`      | 分析字符串s，输出其分析步骤                         |
-| `main`         | 主程序入口，从此进入，填充初始分析表及产生式初始化，调用读取文件函数开始分析
+| `main`         | 主程序入口，从此进入，填充初始分析表及产生式初始化，调用读取文件函数开始分析 |
 
 ### （2）函数的调用关系
 ![function](https://img-blog.csdnimg.cn/abc7e8b3a3284171aa084634eb198772.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5L2ZY29z,size_12,color_FFFFFF,t_70,g_se,x_16)
