@@ -1,0 +1,12 @@
+1	2	3
+N	N	N
+N	N	N
+N	N	N
+8	2	3
+N	N	N
+N	9	3
+N	N	10
+N	N	N
+N	N	N
+N	N	N
+N	N	N

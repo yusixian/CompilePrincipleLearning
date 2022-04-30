@@ -1,0 +1,12 @@
+N	N	s4	N	s5	N
+s6	N	N	N	N	acc
+r2	s7	N	r2	N	r2
+r4	r4	N	r4	N	r4
+N	N	s4	N	s5	N
+r6	r6	N	r6	N	r6
+N	N	s4	N	s5	N
+N	N	s4	N	s5	N
+s6	N	N	s11	N	N
+r1	s7	N	r1	N	r1
+r3	r3	N	r3	N	r3
+r5	r5	N	r5	N	r5
